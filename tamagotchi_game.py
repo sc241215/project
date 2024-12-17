@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import simpledialog
 
 class TamagotchiGame:
     def __init__(self, master):
@@ -9,7 +10,7 @@ class TamagotchiGame:
         self.hunger = 0  # エサの必要度
         self.happiness = 100  # 機嫌
         self.growth = 0  # 成長段階（0:卵、1:子供、2:大人、3:進化後）
-        self.age = 0  # 年齢
+        self.age = 0  # 年齢（0歳からスタート）
         self.alive = True  # 生死状態
         self.in_game = False  # ゲーム中かどうか
         self.color = "yellow"  # 初期キャラクターの色
@@ -23,9 +24,10 @@ class TamagotchiGame:
         self.instructions_frame.pack(pady=20)
 
         instructions = """操作説明:
-        1. エサを与える: "エサを与える"ボタンでお腹を満たします。
-        2. 遊ぶ: "遊ぶ"ボタンで「がんばるっち」の機嫌を良くします。
-        3. 寝かせる: "寝かせる"ボタンで「がんばるっち」の機嫌を回復します。
+        1. ごはん: "ごはん"ボタンを押してエサを選びます。
+        2. お風呂: "お風呂"ボタンを押して「がんばるっち」をきれいにします。
+        3. 遊ぶ: "遊ぶ"ボタンで「がんばるっち」の機嫌を良くします。
+        4. 寝かせる: "寝かせる"ボタンで「がんばるっち」の機嫌を回復します。
         
         「がんばるっち」を育てて、元気に成長させましょう!
         """
@@ -41,12 +43,12 @@ class TamagotchiGame:
         """ゲーム開始"""
         self.instructions_frame.pack_forget()  # 操作説明を非表示にする
 
+        # キャラクターの色を選択する
+        self.choose_color()
+
         # ゲームの初期設定
         self.canvas = tk.Canvas(self.master, width=400, height=400, bg="lightblue")
         self.canvas.pack()
-
-        # キャラクターの色を選択する
-        self.choose_color()
 
         # たまごっち（がんばるっち）の顔（卵からスタート）
         self.face = self.create_face()
@@ -54,17 +56,16 @@ class TamagotchiGame:
         # ステータス表示
         self.status_text = self.canvas.create_text(10, 10, anchor="nw", text=self.get_status(), font=('Arial', 12), fill="black")
 
-        # エサボタンの作成
-        self.feed_bibimba_button = tk.Button(self.master, text="ビビンバを与える", command=lambda: self.feed("ビビンバ"))
-        self.feed_bibimba_button.pack(side="left")
+        # 機嫌ゲージ表示
+        self.happiness_bar = self.canvas.create_rectangle(10, 40, 210, 60, fill="green")
+        
+        # 選択肢ボタン（ごはん、お風呂、遊ぶ、寝る）
+        self.food_button = tk.Button(self.master, text="ごはん", command=self.select_food)
+        self.food_button.pack(side="left")
 
-        self.feed_burger_button = tk.Button(self.master, text="ハンバーガーを与える", command=lambda: self.feed("ハンバーガー"))
-        self.feed_burger_button.pack(side="left")
+        self.bath_button = tk.Button(self.master, text="お風呂", command=self.bath)
+        self.bath_button.pack(side="left")
 
-        self.feed_tomato_button = tk.Button(self.master, text="トマトを与える", command=lambda: self.feed("トマト"))
-        self.feed_tomato_button.pack(side="left")
-
-        # 遊ぶボタンと寝かせるボタン
         self.play_button = tk.Button(self.master, text="遊ぶ", command=self.play)
         self.play_button.pack(side="left")
 
@@ -76,19 +77,36 @@ class TamagotchiGame:
         self.update_game()
 
     def choose_color(self):
-        """キャラクターの色を選択する"""
-        self.color = "yellow"  # キャラクターの色を「黄色」に設定（簡略化）
+        """キャラクターの色を日本語で選択する"""
+        color = simpledialog.askstring("色を選ぶ", "キャラクターの色を選んでください (例: 赤, 青, 緑, 黄色):")
+        if color:
+            # 入力された色を小文字に変換して、色名をチェック
+            color = color.strip().lower()
+            if color == "赤" or color == "あか":
+                self.color = "red"
+            elif color == "青" or color == "あお":
+                self.color = "blue"
+            elif color == "緑" or color == "みどり":
+                self.color = "green"
+            elif color == "黄色" or color == "きいろ":
+                self.color = "yellow"
+            else:
+                self.color = "yellow"  # 無効な入力の場合、デフォルトは黄色
+        else:
+            self.color = "yellow"  # 入力が無かった場合、黄色をデフォルトにする
 
     def create_face(self):
-        """顔の描画 (目、口、顔の輪郭を作成)"""
-        # 顔の輪郭
-        self.face = self.canvas.create_oval(120, 120, 280, 280, fill=self.color)
+        """顔の描画 (シンプルな顔)"""
+        # 顔の輪郭（シンプルな丸型）
+        self.face = self.canvas.create_oval(120, 120, 280, 280, fill=self.color, outline="black")
 
-        # 目（初期状態）
-        self.left_eye = self.canvas.create_oval(160, 170, 190, 200, fill="black")
-        self.right_eye = self.canvas.create_oval(210, 170, 240, 200, fill="black")
+        # 目（シンプルで可愛いデザイン）
+        self.left_eye = self.canvas.create_oval(160, 170, 190, 200, fill="white")
+        self.right_eye = self.canvas.create_oval(210, 170, 240, 200, fill="white")
+        self.left_pupil = self.canvas.create_oval(170, 180, 180, 190, fill="black")
+        self.right_pupil = self.canvas.create_oval(220, 180, 230, 190, fill="black")
 
-        # 口（初期状態）
+        # 口（シンプルで可愛い口）
         self.mouth = self.canvas.create_arc(170, 220, 230, 260, start=0, extent=-180, style=tk.ARC)
 
         return self.face
@@ -106,11 +124,12 @@ class TamagotchiGame:
                 self.in_game = False
                 self.canvas.itemconfig(self.status_text, text="がんばるっちが死んでしまいました...")
                 self.canvas.create_text(200, 200, text="ゲームオーバー", font=('Arial', 24), fill="red")
+                self.show_restart_button()  # 再挑戦ボタンを表示
                 return  # ゲーム終了
 
-            # 幸せが100未満にならないように調整
-            self.happiness = max(0, self.happiness)
-            self.hunger = min(100, self.hunger)
+            # 機嫌ゲージの更新
+            self.canvas.coords(self.happiness_bar, 10, 40, 10 + self.happiness * 2, 60)
+            self.canvas.itemconfig(self.happiness_bar, fill="green" if self.happiness > 60 else ("yellow" if self.happiness > 30 else "red"))
 
             # 「がんばるっち」が進化する
             if self.age > 1 and self.growth == 0:
@@ -150,24 +169,41 @@ class TamagotchiGame:
             self.canvas.coords(self.right_eye, 210, 170, 240, 200)
             self.canvas.itemconfig(self.mouth, start=0, extent=180)  # 挑戦的な口
 
+    def select_food(self):
+        """ごはん選択肢を表示"""
+        self.food_frame = tk.Frame(self.master)
+        self.food_frame.pack(pady=20)
+
+        self.tomato_button = tk.Button(self.food_frame, text="トマト", command=lambda: self.feed("トマト"))
+        self.tomato_button.pack(side="left")
+
+        self.burger_button = tk.Button(self.food_frame, text="ハンバーガー", command=lambda: self.feed("ハンバーガー"))
+        self.burger_button.pack(side="left")
+
+        self.onigiri_button = tk.Button(self.food_frame, text="おにぎり", command=lambda: self.feed("おにぎり"))
+        self.onigiri_button.pack(side="left")
+
     def feed(self, food):
         """エサを与える"""
         if self.in_game:
-            if food == "ビビンバ":
-                self.happiness += 20
-                self.hunger -= 30
-                self.canvas.create_text(200, 350, text="ビビンバを食べた！", font=('Arial', 12), fill="green")
+            if food == "トマト":
+                self.happiness += 10
+                self.hunger -= 20
+                self.canvas.create_text(200, 350, text="トマトを食べた！", font=('Arial', 12), fill="green")
             elif food == "ハンバーガー":
                 self.happiness += 15
                 self.hunger -= 40
                 self.canvas.create_text(200, 350, text="ハンバーガーを食べた！", font=('Arial', 12), fill="green")
-            elif food == "トマト":
-                self.happiness += 10
-                self.hunger -= 20
-                self.canvas.create_text(200, 350, text="トマトを食べた！", font=('Arial', 12), fill="green")
+            elif food == "おにぎり":
+                self.happiness += 20
+                self.hunger -= 30
+                self.canvas.create_text(200, 350, text="おにぎりを食べた！", font=('Arial', 12), fill="green")
 
             self.canvas.itemconfig(self.status_text, text=self.get_status())
             self.show_eating_animation()
+
+        # 食べ終わったらごはん選択肢を非表示にする
+        self.food_frame.pack_forget()
 
     def show_eating_animation(self):
         """エサを食べているアニメーション"""
@@ -180,6 +216,12 @@ class TamagotchiGame:
             self.happiness = min(100, self.happiness + 20)
             self.canvas.itemconfig(self.status_text, text=self.get_status())
 
+    def bath(self):
+        """お風呂"""
+        if self.in_game:
+            self.happiness = min(100, self.happiness + 10)
+            self.canvas.itemconfig(self.status_text, text=self.get_status())
+
     def sleep(self):
         """寝かせる"""
         if self.in_game:
@@ -190,6 +232,27 @@ class TamagotchiGame:
     def get_status(self):
         """「がんばるっち」の状態をテキストとして返す"""
         return f"元気: {100 - self.hunger:.0f} 機嫌: {self.happiness:.0f} 年齢: {self.age:.1f} 成長: {self.growth}"
+
+    def show_restart_button(self):
+        """再挑戦ボタンを表示"""
+        restart_button = tk.Button(self.master, text="再挑戦", command=self.restart_game)
+        restart_button.pack(pady=20)
+
+    def restart_game(self):
+        """ゲームを再スタート"""
+        # ゲームの状態をリセット
+        self.hunger = 0
+        self.happiness = 100
+        self.growth = 0
+        self.age = 0
+        self.color = "yellow"
+        self.in_game = False
+
+        # ゲームのウィンドウを再初期化
+        for widget in self.master.winfo_children():
+            widget.destroy()
+
+        self.start_game()
 
 # ゲームを実行
 root = tk.Tk()
