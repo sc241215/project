@@ -1,5 +1,5 @@
 # がんばるっち
-プロジェクトの説明です。
+今回
 こういうのを作りたいです。
 https://github.com/UTokyo-IPP/utokyo-ipp.github.io/blob/master/README.md
 
