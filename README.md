@@ -4,13 +4,12 @@
 https://github.com/UTokyo-IPP/utokyo-ipp.github.io/blob/master/README.md
 
 # 記述してほしいこと
-- テーマ名
-- プログラムの概要
+- がんばるっち
+- 某たまご育成ゲームの簡単未完成ver. 自分のキャラ
 - 動作環境 / 必要条件（Requirements）
-- 使い方
-- 工夫した点
-- 参考にしたサイトがあれば記載
-- 作者名
+- マウスでボタンを選択
+- キャラの色を自分で決められる　キャラが寝る、食べるなどの十分な生活習慣で、健康で文化的な最低限度の生活を営むようにできている
+- 伊藤蓮珠
 
 # 参考
 https://learningift.com/blogs/06d6kcV21i9/github%E3%81%AEreadme%E3%82%92markdown%E8%A8%98%E6%B3%95%E3%81%A7%E6%9B%B8%E3%81%8F
